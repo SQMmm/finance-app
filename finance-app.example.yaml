@@ -1,0 +1,13 @@
+listen: 0.0.0.0:8000
+
+mysql:
+  write:
+    username: root
+    password: admin123
+    database: finance
+    host: localhost
+  read:
+    username: root
+    password: admin123
+    database: finance
+    host: localhost
