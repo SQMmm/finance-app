@@ -8,8 +8,8 @@ type Data map[string]interface{}
 
 var (
 	ErrorNotFound = err(Data{
-		"code":    http.StatusBadRequest,
-		"message": "not found",
+		"code":    http.StatusNotFound,
+		"message": "page not found",
 	})
 )
 
