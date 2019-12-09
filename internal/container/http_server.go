@@ -17,7 +17,7 @@ func GetHTTPServer() server.Server {
 }
 
 func buildHTTPServer(cfg *config.Config) error {
-	s := api.NewHandler(manager, cfg.Listen)
+	s := api.NewHandler(manager, cfg.Listen, notFoundAction)
 
 	err := s.RegisterHandler(api.Handler{
 		Action:  nil,

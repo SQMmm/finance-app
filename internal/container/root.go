@@ -9,8 +9,13 @@ import (
 // Build start dependency build process
 func Build(cfg *config.Config) error {
 	builders := []func(*config.Config) error{
+		//infra
 		buildTrackerManager,
 
+		//actions
+		buildNotFoundAction,
+
+		//servers
 		buildHTTPServer,
 	}
 

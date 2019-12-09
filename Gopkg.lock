@@ -164,14 +164,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a6f4198926948def2a31cdb2e76d8e54d77a051dcf28a738da891281489556ea"
-  name = "gitlab.corp.mail.ru/otvetmailru/http-server"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "da927adb563ca8e4ae8629726aabede897b6f587"
-
-[[projects]]
-  branch = "master"
   digest = "1:72f7bc975a18badcb4b05585929a12e042ab45cb0bee781aaab8044f39bd41f5"
   name = "golang.org/x/sys"
   packages = ["unix"]
@@ -212,7 +204,6 @@
     "github.com/pkg/errors",
     "github.com/sirupsen/logrus",
     "github.com/spf13/viper",
-    "gitlab.corp.mail.ru/otvetmailru/http-server",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -3,15 +3,12 @@ package api
 import (
 	"context"
 	"fmt"
-	"github.com/sqmmm/finance-app/internal/logger"
 	"net"
 	"net/http"
 	"sync"
 
 	"github.com/gorilla/mux"
-	//"gitlab.corp.mail.ru/otvetmailru/appotvet-main/internal/logger"
-	//"gitlab.corp.mail.ru/otvetmailru/appotvet-main/internal/metrics"
-	"gitlab.corp.mail.ru/otvetmailru/http-server"
+	"github.com/sqmmm/finance-app/internal/logger"
 )
 
 type Handler struct {
@@ -23,17 +20,26 @@ type Handler struct {
 }
 
 type handler struct {
-	trackerManager logger.LoggerManager
-	addr           string
+	trackerManager  logger.LoggerManager
+	addr            string
+	notFoundHandler http.HandlerFunc
 
 	handlers []Handler
+	router   *mux.Router
+	server   *http.Server
 }
 
-func NewHandler(m logger.LoggerManager, addr string) *handler {
+func NewHandler(m logger.LoggerManager, addr string, notFoundHandler http.HandlerFunc) *handler {
+	r := mux.NewRouter()
 	return &handler{
-		trackerManager: m,
-		addr:           addr,
-		handlers:       make([]Handler, 0),
+		trackerManager:  m,
+		addr:            addr,
+		notFoundHandler: notFoundHandler,
+		handlers:        make([]Handler, 0),
+		router:          r,
+		server: &http.Server{
+			Handler: r,
+		},
 	}
 }
 
@@ -50,14 +56,6 @@ func (h *handler) RegisterHandler(handler Handler) error {
 
 // Serve start serving application api
 func (h *handler) Serve(ctx context.Context, _ *sync.WaitGroup) error {
-	// TODO: Disable in production
-	xhttp.EnableDebugMode()
-	xhttp.RegisterErrorLogger(func(message string) {
-		h.trackerManager.Log().Errorf("failed to register error logger: %s", message)
-	})
-	//todo: to config
-	xhttp.SetVerboseLevel(xhttp.DetailedErrors)
-
 	ln, err := net.Listen("tcp", h.addr)
 	if err != nil {
 		return err
@@ -66,7 +64,7 @@ func (h *handler) Serve(ctx context.Context, _ *sync.WaitGroup) error {
 
 	h.registerRoutes()
 
-	return xhttp.Serve(ln)
+	return h.server.Serve(ln)
 }
 
 func (h *handler) stop(ctx context.Context, ln net.Listener) {
