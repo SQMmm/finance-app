@@ -9,7 +9,7 @@ import (
 )
 
 // TrackerMiddleware adds trackerID to the context
-func TrackerMiddleware(manager logger.LoggerManager) func(next http.Handler) http.Handler {
+func Tracker(manager logger.LoggerManager) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			requestID := rand.Int63()

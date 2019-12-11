@@ -13,3 +13,8 @@ func WriteResponse(resp http.ResponseWriter, statusCode int, data interface{}) e
 
 	return enc.Encode(data)
 }
+
+func ReadData(request *http.Request, data interface{}) error {
+	dec := json.NewDecoder(request.Body)
+	return dec.Decode(data)
+}

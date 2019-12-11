@@ -22,12 +22,11 @@ func main() {
 		log.Fatalf("Initialization error: %v", err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	httpServer := container.GetHTTPServer()
+	server := container.GetServer()
 	wg := &sync.WaitGroup{}
 
-
 	go func() {
-		err = httpServer.Serve(ctx, wg)
+		err = server.Serve(ctx, wg)
 		if err != nil {
 			log.Fatalf("failed to serve: %s", err)
 		}

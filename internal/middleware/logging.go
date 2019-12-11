@@ -8,7 +8,7 @@ import (
 )
 
 // LoggingMiddleware logs all incoming requests
-func LoggingMiddleware(tr logger.Logger) func(next http.Handler) http.Handler {
+func Logging(tr logger.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return handlers.CombinedLoggingHandler(tr.Writer(), next)
 	}
