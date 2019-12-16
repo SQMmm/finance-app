@@ -10,6 +10,7 @@ import (
 	"github.com/sqmmm/finance-app/internal/server"
 	"github.com/sqmmm/finance-app/repository"
 	"github.com/sqmmm/finance-app/services/add_account"
+	"github.com/sqmmm/finance-app/services/add_category"
 	"net/http"
 	"time"
 
@@ -31,14 +32,19 @@ func Build(cfg *config.Config) error {
 	}
 
 	//init repositories
+	//todo: CONFIG
 	accountRepository := repository.NewAccounts(w, r, time.Second)
+	categoryRepository := repository.NewCategories(w, r, time.Second)
+	iconRepository := repository.NewIcons(w, r, time.Second)
 
 	//init services
 	addAccount := add_account.NewService(tracker, accountRepository)
+	addCategory := add_category.NewService(tracker, categoryRepository, iconRepository)
 
 	//init handlers
 	notFoundHandler := actions.NewNotFound(tracker)
 	addAccountHandler := actions.NewAddAccount(tracker, addAccount)
+	addCategoryHandler := actions.NewAddCategory(tracker, addCategory)
 
 	//init server
 	s := api.NewHandler(tracker, cfg.Listen, notFoundHandler)
@@ -68,6 +74,20 @@ func Build(cfg *config.Config) error {
 	})
 	if err != nil {
 		return errors.Wrap(err, "failed to handle addAccount")
+	}
+	err = s.RegisterHandler(api.Handler{
+		Action:  addCategoryHandler,
+		Path:    "/categories",
+		Methods: []string{http.MethodPost},
+		Middlewares: []mux.MiddlewareFunc{
+			middleware.Tracker(tracker),
+			middleware.Logging(tracker.Log()),
+			middleware.Auth(tracker),
+		},
+		PathPrefix: "/api/v1",
+	})
+	if err != nil {
+		return errors.Wrap(err, "failed to handle addCategory")
 	}
 
 	httpServer = s

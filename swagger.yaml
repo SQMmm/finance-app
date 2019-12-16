@@ -19,19 +19,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
-            required:
-              - title
-            properties:
-              title:
-                type: string
-                example: some account
-              use_in_reports:
-                type: boolean
-                example: false
-              start_balance:
-                type: number
-                example: 867.77
+            $ref: '#/definitions/Account'
       responses:
         200:
           description: OK
@@ -49,8 +37,37 @@ paths:
           description: Internal error
           schema:
             $ref: '#/definitions/Error'
-
-
+  /api/v1/categories:
+    post:
+      summary: Create new user category
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      tags: ["Categories"]
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Category"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Category'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Authorization error
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal error
+          schema:
+            $ref: '#/definitions/Error'
 
 definitions:
   Account:
@@ -73,6 +90,49 @@ definitions:
       start_balance:
         type: number
         example: 867.77
+  Category:
+    type: object
+    required:
+      - title
+    properties:
+      id:
+        type: integer
+        example: 935
+      title:
+        type: string
+        example: some category
+      icon:
+        $ref: "#/definitions/Icon"
+      color:
+        $ref: "#/definitions/Color"
+  Icon:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer
+        example: 935
+      name:
+        type: string
+        example: icon
+      path:
+        type: integer
+        example: path/to/icon
+  Color:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer
+        example: 935
+      name:
+        type: string
+        example: color name
+      color:
+        type: integer
+        example: color name
   Error:
     type: object
     required:

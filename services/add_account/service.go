@@ -13,10 +13,10 @@ type AccountAdder interface {
 
 type service struct {
 	manager           logger.LoggerManager
-	accountRepository AccountRepository
+	accountRepository accountRepository
 }
 
-func NewService(m logger.LoggerManager, accounts AccountRepository) *service {
+func NewService(m logger.LoggerManager, accounts accountRepository) *service {
 	return &service{
 		manager:           m,
 		accountRepository: accounts,
