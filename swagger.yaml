@@ -7,6 +7,7 @@ schemes:
   - https
 paths:
   /api/v1/accounts:
+#    todo: add result
     post:
       summary: Create new user account
       produces:
@@ -24,7 +25,12 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/Account'
+            type: object
+            required:
+              - result
+            properties:
+              result:
+                $ref: '#/definitions/Account'
         400:
           description: Bad request
           schema:
@@ -55,7 +61,48 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/Category'
+            type: object
+            required:
+              - result
+            properties:
+              result:
+                $ref: '#/definitions/Category'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Authorization error
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/tags:
+    post:
+      summary: Create new user tag
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      tags: ["Tags"]
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Tag"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            required:
+              - result
+            properties:
+              result:
+                $ref: '#/definitions/Tag'
         400:
           description: Bad request
           schema:
@@ -117,7 +164,7 @@ definitions:
         type: string
         example: icon
       path:
-        type: integer
+        type: string
         example: path/to/icon
   Color:
     type: object
@@ -131,8 +178,22 @@ definitions:
         type: string
         example: color name
       color:
-        type: integer
+        type: string
         example: color name
+  Tag:
+    type: object
+    required:
+      - title
+    properties:
+      id:
+        type: integer
+        example: 935
+      user_id:
+        type: integer
+        example: 1123
+      title:
+        type: string
+        example: tag name
   Error:
     type: object
     required:
