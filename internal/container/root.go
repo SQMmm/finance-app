@@ -10,6 +10,7 @@ import (
 	"github.com/sqmmm/finance-app/internal/server"
 	"github.com/sqmmm/finance-app/repository"
 	"github.com/sqmmm/finance-app/services/add_account"
+	"github.com/sqmmm/finance-app/services/add_account_group"
 	"github.com/sqmmm/finance-app/services/add_category"
 	"github.com/sqmmm/finance-app/services/add_tag"
 	"net/http"
@@ -38,17 +39,20 @@ func Build(cfg *config.Config) error {
 	categoryRepository := repository.NewCategories(w, r, time.Second)
 	iconRepository := repository.NewIcons(w, r, time.Second)
 	tagRepository := repository.NewTags(w, r, time.Second)
+	groupRepository := repository.NewAccountGroups(w, r, time.Second, tracker)
 
 	//init services
 	addAccount := add_account.NewService(tracker, accountRepository)
 	addCategory := add_category.NewService(tracker, categoryRepository, iconRepository)
 	addTag := add_tag.NewService(tracker, tagRepository)
+	addAccountGroup := add_account_group.NewService(tracker, accountRepository, groupRepository)
 
 	//init handlers
 	notFoundHandler := actions.NewNotFound(tracker)
 	addAccountHandler := actions.NewAddAccount(tracker, addAccount)
 	addCategoryHandler := actions.NewAddCategory(tracker, addCategory)
 	addTagHandler := actions.NewAddTagHandler(tracker, addTag)
+	addAccountGroupHandler := actions.NewAddAccountGroup(tracker, addAccountGroup)
 
 	//init server
 	s := api.NewHandler(tracker, cfg.Listen, notFoundHandler)
@@ -106,6 +110,20 @@ func Build(cfg *config.Config) error {
 	})
 	if err != nil {
 		return errors.Wrap(err, "failed to handle addTag")
+	}
+	err = s.RegisterHandler(api.Handler{
+		Action:  addAccountGroupHandler,
+		Path:    "/accounts/group",
+		Methods: []string{http.MethodPost},
+		Middlewares: []mux.MiddlewareFunc{
+			middleware.Tracker(tracker),
+			middleware.Logging(tracker.Log()),
+			middleware.Auth(tracker),
+		},
+		PathPrefix: "/api/v1",
+	})
+	if err != nil {
+		return errors.Wrap(err, "failed to handle addAccountGroup")
 	}
 
 	httpServer = s

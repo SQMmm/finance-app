@@ -7,7 +7,6 @@ schemes:
   - https
 paths:
   /api/v1/accounts:
-#    todo: add result
     post:
       summary: Create new user account
       produces:
